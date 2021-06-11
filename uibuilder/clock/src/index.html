@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" class="h-100"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Production Clock</title>
+    <link rel="icon" href="./images/node-blue.ico">
+    <link type="text/css" rel="stylesheet" href="../uibuilder/vendor/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="../uibuilder/vendor/bootstrap-vue/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="./index.css" media="all">
+</head><body class="h-100">
+    <div id="app" v-cloak class="h-100 font-weight-bold">
+        <b-container fluid class="h-100">
+            <b-row class="h-50">
+                <b-col class="border border-white m-3 text-center d-table">
+                    <span class="d-table-cell align-middle countdown" v-bind:class="{ red: countdownTimer.red }">{{countdownTimer.rendered}}</span>
+                </b-col>
+            </b-row>
+            <b-row class="h-50">
+                <b-col class="w-50 border border-white m-3 text-center d-table">
+                    <span class="d-table-cell align-middle text-uppercase countdownmessage">{{countdownTimer.message}}</span>
+                </b-col>
+                <b-col class="w-50 border border-white m-3" v-if="rtc.isVisible">
+                    <b-row class="text-center h-60 mt-3">
+                        <b-col class="align-middle clocktext">
+                            {{rtc.rendered}}
+                        </b-col>
+                    </b-row>
+                    <b-row class="text-center h-30">
+                        <b-col class="align-middle clockdesc">
+                            Current Time
+                        </b-col>
+                    </b-row>
+                </b-col>
+            </b-row>
+        </b-container>
+    </div>
+    
+    <script src="../uibuilder/vendor/socket.io/socket.io.js"></script>
+    
+    <!-- Prod version -->
+    <script src="../uibuilder/vendor/vue/dist/vue.min.js"></script>
+    <script src="../uibuilder/vendor/bootstrap-vue/dist/bootstrap-vue.min.js"></script>
+    <script src="./uibuilderfe.min.js"></script>
+    
+    <!-- Dev version -->
+    <!--<script src="../uibuilder/vendor/vue/dist/vue.js"></script>
+    <script src="../uibuilder/vendor/bootstrap-vue/dist/bootstrap-vue.js"></script>
+    <script src="./uibuilderfe.js"></script>-->
+
+    <script src="./AnimationController.js"></script>
+    <script src="./RTC.js"></script>
+    <script src="./RundownController.js"></script>
+    <script src="./index.js"></script>
+</body></html>

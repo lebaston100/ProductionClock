@@ -1,0 +1,54 @@
+[v-cloak] { display: none; }
+
+body {
+    background-color: black;
+    color: white;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.red {
+    color: red;
+}
+
+.border {
+    border: 4px solid !important;
+}
+
+.h-60 {
+    height: 60% !important;
+    max-height: 60% !important;
+}
+
+.h-40 {
+    height: 40% !important;
+    max-height: 40% !important;
+}
+
+.h-70 {
+    height: 70% !important;
+    max-height: 70% !important;
+}
+
+.h-30 {
+    height: 30% !important;
+    max-height: 30% !important;
+}
+
+.countdown {
+    font-size: 13.5vw;
+}
+
+.clocktext {
+    font-size: 10vw;
+}
+
+.clockdesc {
+    font-size: 3vw;
+}
+
+.countdownmessage {
+    font-size: 4.5vw;
+}
