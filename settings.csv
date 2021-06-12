@@ -1,0 +1,4 @@
+RealTimeOffset,0,How many ms to offset the realtime in case you want to compensate for output delivery delay
+TimeZoneOffset,0,Timezone offset from GMT in hours
+MilliResolution,0,How many digits of the milliseconds should be displayed. Set to 0 to turn MS off
+ShowHours,No,If the countdown timer should show hours instead of > 60 minutes. Yes/No

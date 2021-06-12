@@ -3,7 +3,7 @@
 This is a fairly simple web-client based countdown timer and clock that follows a predefined rundown with an "unlimited" number of cues. It's not 100% stand-alone but runs on top of node-red for the backend/web server and the uibuilder node with the help of vue.js/bootstrap.
 
 Features:
-- Rundown is pulled via the google api from any google sheet that you have edit access to
+- Rundown is pulled via the google api from any google sheet that you have edit access to or from a local csv file
 - Rundown and settings can be updated on the fly at any time
 - It supports multiple different countdowns at the same time over multiple different frontends that run from the same server
 - Time is always synced from the node-red server and does not rely on the web-clients local time
@@ -21,7 +21,7 @@ Features:
 ## Setup
 The overall first time setup involves quite a few steps if you are starting from scratch. There is also not only one right way of doing things for a lot of steps. Having some basic knowledge on how to handle nodejs related stuff and maybe even node-red helps.
 
-#### Rough overview:
+#### Rough overview (Using google sheets):
 - Create Google api application, service user and authentication credentials
 - Install Node.js and node-red
 - Install needed node-red modules
@@ -29,16 +29,23 @@ The overall first time setup involves quite a few steps if you are starting from
 - Import google api auth
 - Configure sheet data source
 
+#### Rough overview (Using local files):
+- Install Node.js and node-red
+- Install needed node-red modules
+- Import files and flows from github
+- Configure file locations
+
 #### Required node-red/uibuilder modules for the people who want to skip a few setup steps and know their stuff
 node-red:
-- [node-red-contrib-google-sheets](https://flows.nodered.org/node/node-red-contrib-google-sheets)
+- [node-red-contrib-google-sheets](https://flows.nodered.org/node/node-red-contrib-google-sheets) (install this even if you don't use the google sheets option)
 - [node-red-contrib-uibuilder](https://flows.nodered.org/node/node-red-contrib-uibuilder)
 
 uibuilder:
 - [vue](https://www.npmjs.com/package/vue)
 - [bootstrap-vue](https://www.npmjs.com/package/bootstrap-vue)
 
-#### Ready? Let's go:
+#### Ready? Let's go:  
+In case you want to use the local file option you can ignore all the steps that have to do with google.  
  1. Google API Stuff  
  1.1. Head to the [Google cloud console service user page](https://console.cloud.google.com/iam-admin/serviceaccounts)  
  1.2. If you already have a project you can use an existing one otherwise click on "create project" on the top right. Give the project some name or leave the default one.  
@@ -57,12 +64,12 @@ uibuilder:
  3.1. Open the flow editor in your browser  
  3.2. Click on the hamburger menu on the top right and choose "Manage palette" and select the "Install" tab  
  3.3. In the seach bar copy-paste "node-red-contrib-uibuilder" and click on the "install"(search result list) -> "Install"(install popup) buttons. Wait a bit until node-red reports that it finished installing.  
- 3.4. Repeat theis process again for "node-red-contrib-google-sheets"  
+ 3.4. Repeat theis process again for "node-red-contrib-google-sheets" (install this even if you don't use the google sheets option)  
  4. Installing the production clock project  
  4.1. Download and unzip the [master branch zip](https://github.com/lebaston100/ProductionClock/archive/refs/heads/main.zip) or use you favorite git client to clone the repo  
  4.2. Head back to the node-red dashboard. In the hamburger menu (top right) select "Import" and click "select a file to import". Now select the "flows.json" in the projects "flow" folder and click the "Import Button".  
  4.3. Now click the big red "Deploy" button on the top right to start the flow  
- 4.4. In the node-red flow editor choose the "Sheets API" tab  
+ 4.4. In the node-red flow editor choose the "Settings/Rundown API" tab  
  4.5. Double click the "Get Gsheet Rundown Data" node to open it's settings (you will need this again later)  
  4.6. In the first line where it says "cred" click on the pen icon to open the credential node settings  
  4.7. Open the .json file you downloaded earlier from the google website with a text editor and copy-paste everything from the file into the big "Creds" textbox in node-red  
@@ -78,10 +85,16 @@ uibuilder:
 5.1. Clone the [template](https://docs.google.com/spreadsheets/d/1vuk6D56GfGpQ8ZVcVkTZMTHZln62enbjQTnc_ASXXFw/edit?usp=sharing) into your own account.  
 5.2. Open the share dialog and share the document with the google service user email you copied earlier. Make sure the user has edit permission.  
 5.3. Copy the spreadsheet id that is displayed in the url bar, for the template this would be "1vuk6D56GfGpQ8ZVcVkTZMTHZln62enbjQTnc_ASXXFw"  
-5.4. Head back to the node-red flow editor and double click the "Get Gsheet Rundown Data" again in the "Sheets API" tab  
+5.4. Head back to the node-red flow editor and double click the "Get Gsheet Rundown Data" again in the "Settings/Rundown API" tab  
 5.5. In the field that says "SpreadsheetID" remove everything and paste the spreadsheet id  
 5.6. Click "Done" and repeat the process for the "Get Gsheet Settings Data" pasting the id into the field  
 5.7.  Finish the setup by clicking "Deploy" again  
+6. Setting up the local file option instead of google sheets  
+6.1. Export the both sheets of the linked template google sheet as .csv or use the included template .csv files  
+6.2. Copy both files into your .node-red folder or any folder that node-red can access  
+6.3 Open the node-red flow editor  
+6.4 In the "Settings/Rundown API" Tab double click each of the "read file" and "watch local file changes" nodes and replace the value in "File(s)" (watch node) and "Filename" (file in node) with the path and filename for the csv files (can even be relative paths)  
+6.5. To disable the google sheets stuff either delete the "Trigger * Sheet Update" and "Get Gsheet * Data" nodes by clicking them once and pressing DEL or just remove the "wires" after the 2 blue inject nodes  
 
 This should do with initial setup.
  
@@ -90,7 +103,8 @@ This should do with initial setup.
 ### The rundown/settings sheet
 The rundown and settings are stored in the same google sheet document but on different sheets("pages/tabs/whatever"). The rundown one has to be called "Rundown" and the settings one "Settings".  
 **I highly suggest you just clone the template provided here for ease-of-use:** [google sheets template here](https://docs.google.com/spreadsheets/d/1vuk6D56GfGpQ8ZVcVkTZMTHZln62enbjQTnc_ASXXFw/edit?usp=sharing)  
-The template is also included in the git as "ProductionClockTemplate.ods"
+The template is also included in the git as "ProductionClockTemplate.ods"  
+If you use the csv each has to have the same format as the google sheets. Unlike the google sheets the local file will automatically detect if the file was modified and read it again.
 
 Rundown:  
 The first row conains the header that should not be modified (or else parsing the document will no longer work). Row 2 and following contain the actual rundown. There is no limit on how many rows you can have but the template is configured for 998 cues which i would guess is more then enough.  
