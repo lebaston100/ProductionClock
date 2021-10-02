@@ -14,9 +14,10 @@ Features:
 - Countdown can overflow into negative numbers if configured before going to the next cue
 - Rundown and settings polling interval can be configured
 - Displayed time "resolution" defaults to 1 second but displaying milliseconds can be enabled
-- Realtime Clock always uses the sane 24h time system
+- Realtime Clock always uses the sane 24h time system  
 
-![Example image](/exampleimage.jpg?raw=true)
+Demo Video:
+[![Example image/video](/exampleimage.jpg?raw=true)](https://youtu.be/Vnax76UUxAQ)
 
 ## Setup
 The overall first time setup involves quite a few steps if you are starting from scratch. There is also not only one right way of doing things for a lot of steps. Having some basic knowledge on how to handle nodejs related stuff and maybe even node-red helps.
