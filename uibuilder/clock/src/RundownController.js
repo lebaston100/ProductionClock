@@ -15,7 +15,7 @@ RundownController.prototype.updateRundown = function(newRundown) {
 RundownController.prototype.timer = function() {
     let now = this._fe.trueTS;
     let index = this._rd.findIndex(el => {
-        if (el["Timer-End-Time"] + el["Negative-Overrun"] > (this._fe.settings.MilliResolution > 0 ? now : now)) { return true; } else { return false; }
+        if (el["Timer-End-Time"] + el["Negative-Overrun"] > now) { return true } else { return false }
     });
     if (index >= 0) {
         this._activeIndex = index;
@@ -40,7 +40,7 @@ RundownController.prototype.timer = function() {
         let s = this._fe.settings.MilliResolution > 0 ? urs.toFixed(this._fe.settings.MilliResolution) : rs;
         
         // clock should be red
-        this._fe.countdownTimer.red = remaining < 0 && parseFloat(s) > 0.0 ? true : false;
+        this._fe.countdownTimer.red = remaining < (this._fe.settings.MilliResolution > 0 ? -0.001 : -999) ? true : false;
         
         // pass to format function
         this._fe.countdownTimer.rendered = this.format(m, s);

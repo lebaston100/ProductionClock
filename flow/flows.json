@@ -1,1 +1,1480 @@
-[{"id":"a4fdfb7a.7c4368","type":"tab","label":"Settings/Rundown API","disabled":false,"info":""},{"id":"e1a3ba29.a71368","type":"tab","label":"Clock UI","disabled":false,"info":""},{"id":"7bde5268.b8bf9c","type":"tab","label":"Logic","disabled":false,"info":""},{"id":"1d8ad163.b81b1f","type":"subflow","name":"Clean MSG","info":"","category":"","in":[{"x":60,"y":40,"wires":[{"id":"5a87d3d1.2cce2c"}]}],"out":[{"x":300,"y":40,"wires":[{"id":"5a87d3d1.2cce2c","port":0}]}],"env":[],"meta":{},"color":"#C7E9C0","icon":"font-awesome/fa-arrow-right"},{"id":"ca535f89.f2c79","type":"subflow","name":"Object.fromEntries","info":"","category":"parser","in":[{"x":40,"y":40,"wires":[{"id":"b7714d53.9d6c2"}]}],"out":[{"x":300,"y":40,"wires":[{"id":"b7714d53.9d6c2","port":0}]}],"env":[{"name":"msg.topic","type":"str","value":""}],"meta":{},"color":"#C7E9C0","icon":"font-awesome/fa-columns"},{"id":"89acf5a3.56af08","type":"subflow","name":"Filter Rundown","info":"","category":"","in":[{"x":60,"y":80,"wires":[{"id":"53974af0.6342c4"}]}],"out":[{"x":280,"y":80,"wires":[{"id":"53974af0.6342c4","port":0}]}],"env":[],"meta":{},"color":"#C7E9C0","icon":"font-awesome/fa-filter"},{"id":"5b44865f.2ff418","type":"gauth"},{"id":"1c9bbd3e.5552a3","type":"GSheet","z":"a4fdfb7a.7c4368","creds":"5b44865f.2ff418","method":"get","action":"","sheet":"1qihh3IrDcB6a0n275VdRi8QV5XKkyY63QYqQOKKoa6I","cells":"Rundown","flatten":false,"name":"Get Gsheet Rundown Data","x":520,"y":200,"wires":[["65aa8839.841cf8"]]},{"id":"5ffc6906.19b878","type":"inject","z":"a4fdfb7a.7c4368","name":"Trigger Rundown Sheet Update","props":[{"p":"payload"}],"repeat":"60","crontab":"","once":true,"onceDelay":0.1,"topic":"","payload":"","payloadType":"date","x":220,"y":200,"wires":[["1c9bbd3e.5552a3"]]},{"id":"fe225597.60f708","type":"comment","z":"a4fdfb7a.7c4368","name":"Google Sheets API","info":"","x":150,"y":140,"wires":[]},{"id":"1af124ea.6e617b","type":"comment","z":"a4fdfb7a.7c4368","name":"Rundown","info":"","x":120,"y":100,"wires":[]},{"id":"144e5fec.4d4d8","type":"GSheet","z":"a4fdfb7a.7c4368","creds":"5b44865f.2ff418","method":"get","action":"","sheet":"1qihh3IrDcB6a0n275VdRi8QV5XKkyY63QYqQOKKoa6I","cells":"Settings","flatten":false,"name":"Get Gsheet Settings Data","x":510,"y":640,"wires":[["608ecd84.e73e84"]]},{"id":"ba6a865c.399178","type":"inject","z":"a4fdfb7a.7c4368","name":"Trigger Settings Sheet Update","props":[{"p":"payload"}],"repeat":"600","crontab":"","once":true,"onceDelay":0.1,"topic":"","payload":"","payloadType":"date","x":210,"y":640,"wires":[["144e5fec.4d4d8"]]},{"id":"fde1cea7.8c9e8","type":"debug","z":"a4fdfb7a.7c4368","name":"GSheets Settings","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":990,"y":640,"wires":[]},{"id":"ec912d56.47fb7","type":"comment","z":"a4fdfb7a.7c4368","name":"Settings","info":"","x":120,"y":540,"wires":[]},{"id":"7e73fde9.020774","type":"link in","z":"a4fdfb7a.7c4368","name":"Trigger Setttings Update","links":[],"x":95,"y":700,"wires":[["ca596a76.25f1a8"]]},{"id":"ca596a76.25f1a8","type":"subflow:1d8ad163.b81b1f","z":"a4fdfb7a.7c4368","name":"","env":[],"x":270,"y":700,"wires":[["144e5fec.4d4d8"]]},{"id":"5a87d3d1.2cce2c","type":"function","z":"1d8ad163.b81b1f","name":"Clean Message","func":"return {payload: null};","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":180,"y":40,"wires":[[]]},{"id":"470907e8.5486d8","type":"link in","z":"a4fdfb7a.7c4368","name":"Trigger Rundown Update","links":[],"x":95,"y":260,"wires":[["9f4325d8.f674a8"]]},{"id":"9f4325d8.f674a8","type":"subflow:1d8ad163.b81b1f","z":"a4fdfb7a.7c4368","name":"","env":[],"x":270,"y":260,"wires":[["1c9bbd3e.5552a3"]]},{"id":"b7714d53.9d6c2","type":"function","z":"ca535f89.f2c79","name":"array to obj","func":"try {\n    msg.payload = Object.fromEntries(msg.payload);\n    if (env.get(\"msg.topic\")) { msg.topic = env.get(\"msg.topic\"); }\n} catch (e) {\n    node.error(e);\n}\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":170,"y":40,"wires":[[]]},{"id":"608ecd84.e73e84","type":"subflow:ca535f89.f2c79","z":"a4fdfb7a.7c4368","name":"","env":[{"name":"msg.topic","value":"settings/settings","type":"str"}],"x":770,"y":640,"wires":[["fde1cea7.8c9e8","dafbaa9f.6a7e58","f8ad79e0.f06098"]]},{"id":"65aa8839.841cf8","type":"function","z":"a4fdfb7a.7c4368","name":"to settings object","func":"msg.topic = \"settings/rundown\";\nmsg.payload = convertToSettingsObject(removeEmptyRows(msg.payload))||[];\n\nif (msg.payload.length === 0) {\n    node.error(`Your config file is empty, not going to do anything`);\n    return null;\n}\n\nreturn msg;\n\nfunction convertToSettingsObject([key, ...val]) {\n   return val.map(row => Object.fromEntries(row.map((value, index) => [key[index], value])));\n}\n\nfunction removeEmptyRows(array) {\n    return array.filter(x => x.length === 6);\n}","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":770,"y":200,"wires":[["72063e4e.698cf"]],"icon":"font-awesome/fa-arrows-h"},{"id":"72063e4e.698cf","type":"function","z":"a4fdfb7a.7c4368","name":"Convert+Check Data","func":"try {\n    //Parse Data\n    msg.payload = msg.payload.map((event, index) => {\n        event[\"Timer-End-Time\"] = parseTimeString(event[\"Timer-End-Time\"], index+2);\n        event[\"Negative-Overrun\"] = Math.abs(parseInt(event[\"Negative-Overrun\"])*1000) || 0;\n        event[\"Show-Current-Time\"] = event[\"Show-Current-Time\"] == \"Yes\" ? true : false;\n        event[\"Clock-ID\"] = getClockIds(event[\"Clock-ID\"]||\"1\");\n        event[\"Timer-Text\"] = event[\"Timer-Text\"].length > 50 ? event[\"Timer-Text\"].substring(0, 50) : event[\"Timer-Text\"];\n        return event;\n    });\n    // Sort array by calculated timestamps\n    msg.payload.sort(compareDates);\n    \n    if (overrunMakesNoSense(msg.payload)) throw new RangeError(\"InvalidOverrunLength\");\n} catch(e) {\n    node.error(e);      // For the debug panel\n    node.error(e, msg); // For the catch node\n    return null;\n}\n\nif (hasChanged(msg.payload)) {\n    //node.warn(\"rundown has changed\");\n    return [msg, msg];\n}\n\nreturn [null, msg];\n\n// Parse the comma seperated clock ID data into an array\nfunction getClockIds(gsd) {\n    return gsd.split(\",\").map(id => {\n        return Math.abs(parseInt(id)) || 0;\n    });\n}\n\n// Compare function to sort by actual timer end time\nfunction compareDates(a, b) {\n    if (a[\"Timer-End-Time\"] < b[\"Timer-End-Time\"]) {\n        return -1;\n    } else if (a[\"Timer-End-Time\"] > b[\"Timer-End-Time\"]) {\n        return 1;\n    }\n    return 0;\n}\n\n// Check if the overrun value colides with the next timer\nfunction overrunMakesNoSense(rd) {\n    let result = rd.some((row, i, arr) => {\n        if (i < arr.length-2) {\n            if (row[\"Timer-End-Time\"] + row[\"Negative-Overrun\"] >= arr[i+1][\"Timer-End-Time\"]) {\n                node.error(`Invalid overrun in sheet line ${i+2}`);\n                return true;\n            }\n        }\n        return false;\n    });\n    return result;\n}\n\n// Parse the sheet date string into a timestamp\nfunction parseTimeString(dts, line) {\n    try {\n        let p1 = dts.split(\".\", 4);\n        let p2 = p1[2].split(\" \", 2);\n        let p3 = p2[1].split(\":\", 4).map(val => parseInt(val) || 0);\n        let d = new Date();\n        d.setUTCFullYear(parseInt(p2), parseInt(p1[1])-1, parseInt(p1[0]));\n        d.setUTCHours(p3[0], p3[1], p3[2], parseInt(p1[3]));\n        let ts = d.getTime();\n        if (ts <= 0) { throw new RangeError(); } // Negative time is not allowed, it's not the 1900's anymore\n        return ts;\n    } catch(e) {\n        node.error(`Invalid date string in sheet for value \"${dts}\" line ${line}`);\n        throw new RangeError(\"InvalidSpreadSheetDate\");\n    }\n}\n\n// Check if settings have changed\nfunction hasChanged(newRundown) {\n    let glrd = global.get(\"fullRundown\")||[];\n    if (glrd.length !== newRundown.length) return true; // Check for equal length first because that's an obvious sign that it changed\n\n    for (const [index, elem] of newRundown.entries()) {\n        for (var e in elem) {\n            if (typeof glrd[index][e] === \"object\") {\n                if (JSON.stringify(glrd[index][e]) !== JSON.stringify(elem[e])) return true; // only an array should ever show up here\n            } else {\n                if (glrd[index][e] != elem[e]) return true;\n            }\n        }\n    }\n    return false;\n}","outputs":2,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1000,"y":200,"wires":[["8022fd1.a21ce","514af678.aedc08"],["4df6afd7.9488a"]],"icon":"node-red/swap.svg"},{"id":"923398f.e38b768","type":"catch","z":"a4fdfb7a.7c4368","name":"","scope":null,"uncaught":false,"x":120,"y":1040,"wires":[["e5b66f80.267b3"]]},{"id":"e5b66f80.267b3","type":"debug","z":"a4fdfb7a.7c4368","name":"Sheets API Catch","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":360,"y":1040,"wires":[],"icon":"node-red/alert.svg"},{"id":"8022fd1.a21ce","type":"link out","z":"a4fdfb7a.7c4368","name":"rundown settings update event data changed","links":["188f66f6.851099"],"x":1175,"y":180,"wires":[]},{"id":"dafbaa9f.6a7e58","type":"link out","z":"a4fdfb7a.7c4368","name":"general settings update event data","links":["52ba4a2f.6b3714"],"x":915,"y":680,"wires":[]},{"id":"32b912bc.dbbf9e","type":"uibuilder","z":"e1a3ba29.a71368","name":"","topic":"","url":"clock","fwdInMessages":false,"allowScripts":false,"allowStyles":false,"copyIndex":true,"showfolder":false,"useSecurity":false,"sessionLength":432000,"tokenAutoExtend":false,"reload":true,"x":390,"y":180,"wires":[["95b94924.89ff08"],["e51a8ee1.20f3e"]],"icon":"font-awesome/fa-clock-o"},{"id":"35630b6f.aed2b4","type":"debug","z":"e1a3ba29.a71368","name":"FE Data","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":800,"y":160,"wires":[]},{"id":"8e095d3d.bb853","type":"debug","z":"e1a3ba29.a71368","name":"FE Control","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":810,"y":200,"wires":[]},{"id":"dafffb38.5a6498","type":"comment","z":"a4fdfb7a.7c4368","name":"Error Reporting","info":"","x":140,"y":980,"wires":[]},{"id":"5a7cfa24.2ea4e4","type":"inject","z":"e1a3ba29.a71368","name":"Sync Timestamp","props":[{"p":"payload.ts","v":"","vt":"date"},{"p":"topic","vt":"str"}],"repeat":"30","crontab":"","once":true,"onceDelay":"2","topic":"settings/rtcRefTs","x":170,"y":160,"wires":[["32b912bc.dbbf9e"]]},{"id":"434fa7e2.070b58","type":"comment","z":"e1a3ba29.a71368","name":"server sync timestamp","info":"","x":160,"y":100,"wires":[]},{"id":"4df6afd7.9488a","type":"change","z":"a4fdfb7a.7c4368","name":"","rules":[{"t":"set","p":"fullRundown","pt":"global","to":"payload","tot":"msg"}],"action":"","property":"","from":"","to":"","reg":false,"x":1260,"y":240,"wires":[[]]},{"id":"f8ad79e0.f06098","type":"change","z":"a4fdfb7a.7c4368","name":"","rules":[{"t":"set","p":"globalSettings","pt":"global","to":"payload","tot":"msg"}],"action":"","property":"","from":"","to":"","reg":false,"x":1010,"y":720,"wires":[[]]},{"id":"95b94924.89ff08","type":"link out","z":"e1a3ba29.a71368","name":"fe event","links":["162ae27a.9d608e","568dbf8d.9f252"],"x":515,"y":160,"wires":[]},{"id":"568dbf8d.9f252","type":"link in","z":"e1a3ba29.a71368","name":"from fe event","links":["95b94924.89ff08"],"x":695,"y":160,"wires":[["35630b6f.aed2b4"]]},{"id":"162ae27a.9d608e","type":"link in","z":"7bde5268.b8bf9c","name":"from fe event","links":["95b94924.89ff08"],"x":155,"y":180,"wires":[["4f9a5a71.0c8da4"]]},{"id":"4f9a5a71.0c8da4","type":"switch","z":"7bde5268.b8bf9c","name":"","property":"topic","propertyType":"msg","rules":[{"t":"eq","v":"initialContact","vt":"str"},{"t":"else"}],"checkall":"true","repair":false,"outputs":2,"x":250,"y":180,"wires":[["392012d.0cabbee"],["bc05aa38.866b08"]]},{"id":"f7b5f832.e91738","type":"comment","z":"7bde5268.b8bf9c","name":"handle frontend requests","info":"","x":250,"y":80,"wires":[]},{"id":"e51a8ee1.20f3e","type":"link out","z":"e1a3ba29.a71368","name":"fe control event","links":["1769b879.3fa9f8","dcc69dd1.1b66c"],"x":515,"y":200,"wires":[]},{"id":"1769b879.3fa9f8","type":"link in","z":"e1a3ba29.a71368","name":"from fe control event","links":["e51a8ee1.20f3e"],"x":695,"y":200,"wires":[["8e095d3d.bb853"]]},{"id":"2c759229.d416ee","type":"comment","z":"7bde5268.b8bf9c","name":"manage connected client sessions","info":"","x":280,"y":280,"wires":[]},{"id":"dcc69dd1.1b66c","type":"link in","z":"7bde5268.b8bf9c","name":"from fe control event","links":["e51a8ee1.20f3e"],"x":155,"y":340,"wires":[["ecbe48b.5ae2fb8"]]},{"id":"ecbe48b.5ae2fb8","type":"function","z":"7bde5268.b8bf9c","name":"manage session","func":"var clientList = global.get(\"clients\")||{};\n\nvar socketId = msg._socketId;\n\nif (msg.uibuilderCtrl == \"client connect\") {\n    //ignore for now\n} else if (msg.uibuilderCtrl == \"ready for content\") {\n    // ignore for now\n} else if (msg.uibuilderCtrl == \"client disconnect\") {\n    try {\n        delete clientList[socketId];\n    } catch(e) {\n        node.warn(\"client not in list\");\n    }\n}\n\nglobal.set(\"clients\", clientList);\n\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":460,"y":340,"wires":[[]],"icon":"font-awesome/fa-align-left"},{"id":"98c83cc6.d13ce","type":"inject","z":"7bde5268.b8bf9c","name":"trigger clear","props":[],"repeat":"","crontab":"","once":true,"onceDelay":0.1,"topic":"","x":210,"y":400,"wires":[["82cae639.a59a58"]]},{"id":"82cae639.a59a58","type":"change","z":"7bde5268.b8bf9c","name":"clear global.clients","rules":[{"t":"set","p":"clients","pt":"global","to":"{}","tot":"json"}],"action":"","property":"","from":"","to":"","reg":false,"x":470,"y":400,"wires":[[]]},{"id":"392012d.0cabbee","type":"function","z":"7bde5268.b8bf9c","name":"parse clockID","func":"var clientList = global.get(\"clients\")||{};\n\nvar socketId = msg._socketId;\n\ntry {\n    clientList[msg._socketId][\"clockID\"] = parseInt(msg.payload.clockID);\n} catch(e) {\n    // Because i can't find a fitting uibuilder event for the right timing the initialContact message will come in before the ready for content event most of the time\n    clientList[socketId] = { sid: socketId, clockID: parseInt(msg.payload.clockID) };\n}\n\nglobal.set(\"clients\", clientList);\n\nmsg.clockID = clientList[msg._socketId][\"clockID\"];\nmsg.payload = global.get(\"fullRundown\")||[];\nmsg.topic = \"settings/rundown\";\n\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":460,"y":160,"wires":[["dfd79f2e.bdfd4","51ee2523.4eb81c"]],"icon":"font-awesome/fa-search"},{"id":"53974af0.6342c4","type":"function","z":"89acf5a3.56af08","name":"filter","func":"msg.payload = msg.payload.filter(obj => obj[\"Clock-ID\"].includes(msg.clockID));\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":170,"y":80,"wires":[[]]},{"id":"8da835fb.b696a8","type":"link in","z":"e1a3ba29.a71368","name":"to frontend unfiltered","links":["fdd2b6ea.3757f8","2633477d.c46d18","bac4d402.97cca8"],"x":235,"y":200,"wires":[["32b912bc.dbbf9e"]]},{"id":"188f66f6.851099","type":"link in","z":"7bde5268.b8bf9c","name":"rundown settings event","links":["8022fd1.a21ce"],"x":155,"y":560,"wires":[["622eb7bd.c21228"]]},{"id":"99977d7a.fa36d","type":"subflow:89acf5a3.56af08","z":"7bde5268.b8bf9c","name":"","env":[],"x":760,"y":560,"wires":[["fdd2b6ea.3757f8"]]},{"id":"f8ba0af3.4be998","type":"split","z":"7bde5268.b8bf9c","name":"","splt":"\\n","spltType":"str","arraySplt":1,"arraySpltType":"len","stream":false,"addname":"","x":430,"y":560,"wires":[["59ef014b.d6d0f"]]},{"id":"82e95f1b.25209","type":"comment","z":"7bde5268.b8bf9c","name":"push rundown updates to ui","info":"","x":260,"y":500,"wires":[]},{"id":"622eb7bd.c21228","type":"change","z":"7bde5268.b8bf9c","name":"","rules":[{"t":"set","p":"rundown","pt":"msg","to":"payload","tot":"msg"},{"t":"set","p":"payload","pt":"msg","to":"clients","tot":"global"},{"t":"set","p":"_socketId","pt":"msg","to":"null","tot":"json"}],"action":"","property":"","from":"","to":"","reg":false,"x":280,"y":560,"wires":[["f8ba0af3.4be998"]]},{"id":"59ef014b.d6d0f","type":"change","z":"7bde5268.b8bf9c","name":"","rules":[{"t":"set","p":"clockID","pt":"msg","to":"payload.clockID","tot":"msg"},{"t":"set","p":"_socketId","pt":"msg","to":"payload.sid","tot":"msg"},{"t":"set","p":"payload","pt":"msg","to":"rundown","tot":"msg"},{"t":"delete","p":"rundown","pt":"msg"},{"t":"delete","p":"parts","pt":"msg"}],"action":"","property":"","from":"","to":"","reg":false,"x":580,"y":560,"wires":[["99977d7a.fa36d"]]},{"id":"fdd2b6ea.3757f8","type":"link out","z":"7bde5268.b8bf9c","name":"from fe filtered rundown","links":["8da835fb.b696a8"],"x":875,"y":560,"wires":[]},{"id":"bc05aa38.866b08","type":"debug","z":"7bde5268.b8bf9c","name":"unhandled fe msg","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":470,"y":200,"wires":[]},{"id":"dfd79f2e.bdfd4","type":"subflow:89acf5a3.56af08","z":"7bde5268.b8bf9c","name":"","env":[],"x":740,"y":160,"wires":[["2633477d.c46d18","9b879460.a15f48"]]},{"id":"2633477d.c46d18","type":"link out","z":"7bde5268.b8bf9c","name":"from fe filtered rundown","links":["8da835fb.b696a8"],"x":875,"y":160,"wires":[]},{"id":"9b879460.a15f48","type":"debug","z":"7bde5268.b8bf9c","name":"Rundown request","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":950,"y":200,"wires":[]},{"id":"514af678.aedc08","type":"debug","z":"a4fdfb7a.7c4368","name":"GSheets Rundown Changed","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","targetType":"msg","statusVal":"","statusType":"auto","x":1280,"y":140,"wires":[]},{"id":"6f2984ed.9e52ac","type":"comment","z":"7bde5268.b8bf9c","name":"push settings update to ui","info":"","x":250,"y":660,"wires":[]},{"id":"52ba4a2f.6b3714","type":"link in","z":"7bde5268.b8bf9c","name":"from settings update event","links":["dafbaa9f.6a7e58"],"x":155,"y":720,"wires":[["bac4d402.97cca8"]]},{"id":"bac4d402.97cca8","type":"link out","z":"7bde5268.b8bf9c","name":"from fe filtered rundown","links":["8da835fb.b696a8"],"x":255,"y":720,"wires":[]},{"id":"51ee2523.4eb81c","type":"change","z":"7bde5268.b8bf9c","name":"send Settings","rules":[{"t":"set","p":"payload","pt":"msg","to":"globalSettings","tot":"global"},{"t":"set","p":"topic","pt":"msg","to":"settings/settings","tot":"str"}],"action":"","property":"","from":"","to":"","reg":false,"x":740,"y":120,"wires":[["2633477d.c46d18"]]},{"id":"a49f29a5.ceb588","type":"inject","z":"e1a3ba29.a71368","name":"Reload all client pages","props":[{"p":"_uib.reload","v":"true","vt":"bool"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","x":180,"y":240,"wires":[["32b912bc.dbbf9e"]]},{"id":"de36469f.332998","type":"comment","z":"e1a3ba29.a71368","name":"\"The page\"","info":"","x":400,"y":120,"wires":[]},{"id":"8669ec14.4af6e","type":"inject","z":"a4fdfb7a.7c4368","name":"Trigger local file update","props":[],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","x":180,"y":400,"wires":[["4bfad26.fc5252c"]]},{"id":"4bfad26.fc5252c","type":"file in","z":"a4fdfb7a.7c4368","name":"read file","filename":"rundown.csv","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":460,"y":400,"wires":[["a243ef00.418cc"]]},{"id":"caac5d1f.83c33","type":"watch","z":"a4fdfb7a.7c4368","name":"watch local file changes","files":"rundown.csv","recursive":"","x":180,"y":440,"wires":[["4bfad26.fc5252c"]]},{"id":"a243ef00.418cc","type":"csv","z":"a4fdfb7a.7c4368","name":"parse csv","sep":",","hdrin":true,"hdrout":"none","multi":"mult","ret":"\\r\\n","temp":"","skip":"0","strings":false,"include_empty_strings":false,"include_null_values":"","x":600,"y":400,"wires":[["c47d153d.4245b8"]]},{"id":"53719ca9.fb0024","type":"comment","z":"a4fdfb7a.7c4368","name":"Google Sheets API","info":"","x":150,"y":580,"wires":[]},{"id":"16908450.dc7c6c","type":"comment","z":"a4fdfb7a.7c4368","name":"Local file API","info":"","x":130,"y":340,"wires":[]},{"id":"c47d153d.4245b8","type":"function","z":"a4fdfb7a.7c4368","name":"check local data","func":"msg.topic = \"settings/rundown\";\nmsg.payload = msg.payload||[];\n\nif (msg.payload.length === 0) {\n    node.error(`Your config file is empty, not going to do anything`);\n    return null;\n}\n\nreturn msg;\n\nfunction removeEmptyRows(array) {\n    return array.filter(x => x.length === 6);\n}","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":760,"y":400,"wires":[["72063e4e.698cf"]],"icon":"font-awesome/fa-search"},{"id":"46ed2650.3017c8","type":"inject","z":"a4fdfb7a.7c4368","name":"Trigger local file update","props":[],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","x":180,"y":840,"wires":[["f13237a4.24e428"]]},{"id":"f13237a4.24e428","type":"file in","z":"a4fdfb7a.7c4368","name":"read file","filename":"settings.csv","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":460,"y":840,"wires":[["16b15b03.58a855"]]},{"id":"66b48ba3.70cea4","type":"watch","z":"a4fdfb7a.7c4368","name":"watch local file changes","files":"settings.csv","recursive":"","x":180,"y":880,"wires":[["f13237a4.24e428"]]},{"id":"16b15b03.58a855","type":"csv","z":"a4fdfb7a.7c4368","name":"parse csv","sep":",","hdrin":false,"hdrout":"none","multi":"mult","ret":"\\r\\n","temp":"","skip":"0","strings":false,"include_empty_strings":false,"include_null_values":"","x":600,"y":840,"wires":[["74b1253b.04941c"]]},{"id":"cddb077b.f004a8","type":"comment","z":"a4fdfb7a.7c4368","name":"Local file API","info":"","x":130,"y":780,"wires":[]},{"id":"74b1253b.04941c","type":"function","z":"a4fdfb7a.7c4368","name":"prep array","func":"msg.payload = msg.payload.map(l => [l[\"col1\"], l[\"col2\"]]);\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":750,"y":840,"wires":[["608ecd84.e73e84"]]}]
+[
+    {
+        "id": "a4fdfb7a.7c4368",
+        "type": "tab",
+        "label": "Settings/Rundown API",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "e1a3ba29.a71368",
+        "type": "tab",
+        "label": "Clock UI",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "7bde5268.b8bf9c",
+        "type": "tab",
+        "label": "Logic",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "1d8ad163.b81b1f",
+        "type": "subflow",
+        "name": "Clean MSG",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "5a87d3d1.2cce2c"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 300,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "5a87d3d1.2cce2c",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#C7E9C0",
+        "icon": "font-awesome/fa-arrow-right"
+    },
+    {
+        "id": "ca535f89.f2c79",
+        "type": "subflow",
+        "name": "Object.fromEntries",
+        "info": "",
+        "category": "parser",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "b7714d53.9d6c2"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 300,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "b7714d53.9d6c2",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "msg.topic",
+                "type": "str",
+                "value": ""
+            }
+        ],
+        "meta": {},
+        "color": "#C7E9C0",
+        "icon": "font-awesome/fa-columns"
+    },
+    {
+        "id": "89acf5a3.56af08",
+        "type": "subflow",
+        "name": "Filter Rundown",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "53974af0.6342c4"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 280,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "53974af0.6342c4",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#C7E9C0",
+        "icon": "font-awesome/fa-filter"
+    },
+    {
+        "id": "5b44865f.2ff418",
+        "type": "gauth"
+    },
+    {
+        "id": "5a87d3d1.2cce2c",
+        "type": "function",
+        "z": "1d8ad163.b81b1f",
+        "name": "Clean Message",
+        "func": "return {payload: null};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b7714d53.9d6c2",
+        "type": "function",
+        "z": "ca535f89.f2c79",
+        "name": "array to obj",
+        "func": "try {\n    msg.payload = Object.fromEntries(msg.payload);\n    if (env.get(\"msg.topic\")) { msg.topic = env.get(\"msg.topic\"); }\n} catch (e) {\n    node.error(e);\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "53974af0.6342c4",
+        "type": "function",
+        "z": "89acf5a3.56af08",
+        "name": "filter",
+        "func": "msg.payload = msg.payload.filter(obj => obj[\"Clock-ID\"].includes(msg.clockID));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1c9bbd3e.5552a3",
+        "type": "GSheet",
+        "z": "a4fdfb7a.7c4368",
+        "creds": "5b44865f.2ff418",
+        "method": "get",
+        "action": "",
+        "sheet": "1qihh3IrDcB6a0n275VdRi8QV5XKkyY63QYqQOKKoa6I",
+        "cells": "Rundown",
+        "flatten": false,
+        "name": "Get Gsheet Rundown Data",
+        "x": 520,
+        "y": 200,
+        "wires": [
+            [
+                "65aa8839.841cf8"
+            ]
+        ]
+    },
+    {
+        "id": "5ffc6906.19b878",
+        "type": "inject",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Trigger Rundown Sheet Update",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payloadType": "date",
+        "x": 220,
+        "y": 200,
+        "wires": [
+            [
+                "1c9bbd3e.5552a3"
+            ]
+        ]
+    },
+    {
+        "id": "fe225597.60f708",
+        "type": "comment",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Google Sheets API",
+        "info": "",
+        "x": 150,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "1af124ea.6e617b",
+        "type": "comment",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Rundown",
+        "info": "",
+        "x": 120,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "144e5fec.4d4d8",
+        "type": "GSheet",
+        "z": "a4fdfb7a.7c4368",
+        "creds": "5b44865f.2ff418",
+        "method": "get",
+        "action": "",
+        "sheet": "1qihh3IrDcB6a0n275VdRi8QV5XKkyY63QYqQOKKoa6I",
+        "cells": "Settings",
+        "flatten": false,
+        "name": "Get Gsheet Settings Data",
+        "x": 510,
+        "y": 640,
+        "wires": [
+            [
+                "608ecd84.e73e84"
+            ]
+        ]
+    },
+    {
+        "id": "ba6a865c.399178",
+        "type": "inject",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Trigger Settings Sheet Update",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 640,
+        "wires": [
+            [
+                "144e5fec.4d4d8"
+            ]
+        ]
+    },
+    {
+        "id": "fde1cea7.8c9e8",
+        "type": "debug",
+        "z": "a4fdfb7a.7c4368",
+        "name": "GSheets Settings",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 990,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "ec912d56.47fb7",
+        "type": "comment",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Settings",
+        "info": "",
+        "x": 120,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "7e73fde9.020774",
+        "type": "link in",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Trigger Setttings Update",
+        "links": [],
+        "x": 95,
+        "y": 700,
+        "wires": [
+            [
+                "ca596a76.25f1a8"
+            ]
+        ]
+    },
+    {
+        "id": "ca596a76.25f1a8",
+        "type": "subflow:1d8ad163.b81b1f",
+        "z": "a4fdfb7a.7c4368",
+        "name": "",
+        "env": [],
+        "x": 270,
+        "y": 700,
+        "wires": [
+            [
+                "144e5fec.4d4d8"
+            ]
+        ]
+    },
+    {
+        "id": "470907e8.5486d8",
+        "type": "link in",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Trigger Rundown Update",
+        "links": [],
+        "x": 95,
+        "y": 260,
+        "wires": [
+            [
+                "9f4325d8.f674a8"
+            ]
+        ]
+    },
+    {
+        "id": "9f4325d8.f674a8",
+        "type": "subflow:1d8ad163.b81b1f",
+        "z": "a4fdfb7a.7c4368",
+        "name": "",
+        "env": [],
+        "x": 270,
+        "y": 260,
+        "wires": [
+            [
+                "1c9bbd3e.5552a3"
+            ]
+        ]
+    },
+    {
+        "id": "608ecd84.e73e84",
+        "type": "subflow:ca535f89.f2c79",
+        "z": "a4fdfb7a.7c4368",
+        "name": "",
+        "env": [
+            {
+                "name": "msg.topic",
+                "value": "settings/settings",
+                "type": "str"
+            }
+        ],
+        "x": 770,
+        "y": 640,
+        "wires": [
+            [
+                "fde1cea7.8c9e8",
+                "dafbaa9f.6a7e58",
+                "f8ad79e0.f06098"
+            ]
+        ]
+    },
+    {
+        "id": "65aa8839.841cf8",
+        "type": "function",
+        "z": "a4fdfb7a.7c4368",
+        "name": "to settings object",
+        "func": "msg.topic = \"settings/rundown\";\nmsg.payload = convertToSettingsObject(removeEmptyRows(msg.payload))||[];\n\nif (msg.payload.length === 0) {\n    node.error(`Your config file is empty, not going to do anything`);\n    return null;\n}\n\nreturn msg;\n\nfunction convertToSettingsObject([key, ...val]) {\n   return val.map(row => Object.fromEntries(row.map((value, index) => [key[index], value])));\n}\n\nfunction removeEmptyRows(array) {\n    return array.filter(x => x.length === 6);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 200,
+        "wires": [
+            [
+                "72063e4e.698cf"
+            ]
+        ],
+        "icon": "font-awesome/fa-arrows-h"
+    },
+    {
+        "id": "72063e4e.698cf",
+        "type": "function",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Convert+Check Data",
+        "func": "try {\n    //Parse Data\n    msg.payload = msg.payload.map((event, index) => {\n        event[\"Timer-End-Time\"] = parseTimeString(event[\"Timer-End-Time\"], index+2);\n        event[\"Negative-Overrun\"] = Math.abs(parseInt(event[\"Negative-Overrun\"])*1000) || 0;\n        event[\"Show-Current-Time\"] = event[\"Show-Current-Time\"] == \"Yes\" ? true : false;\n        event[\"Clock-ID\"] = getClockIds(event[\"Clock-ID\"]||\"1\");\n        event[\"Timer-Text\"] = event[\"Timer-Text\"].length > 50 ? event[\"Timer-Text\"].substring(0, 50) : event[\"Timer-Text\"];\n        return event;\n    });\n    // Sort array by calculated timestamps\n    msg.payload.sort(compareDates);\n    \n    if (overrunMakesNoSense(msg.payload)) throw new RangeError(\"InvalidOverrunLength\");\n} catch(e) {\n    node.error(e);      // For the debug panel\n    node.error(e, msg); // For the catch node\n    return null;\n}\n\nif (hasChanged(msg.payload)) {\n    //node.warn(\"rundown has changed\");\n    return [msg, msg];\n}\n\nreturn [null, msg];\n\n// Parse the comma seperated clock ID data into an array\nfunction getClockIds(gsd) {\n    return gsd.split(\",\").map(id => {\n        return Math.abs(parseInt(id)) || 0;\n    });\n}\n\n// Compare function to sort by actual timer end time\nfunction compareDates(a, b) {\n    if (a[\"Timer-End-Time\"] < b[\"Timer-End-Time\"]) {\n        return -1;\n    } else if (a[\"Timer-End-Time\"] > b[\"Timer-End-Time\"]) {\n        return 1;\n    }\n    return 0;\n}\n\n// Check if the overrun value colides with the next timer\nfunction overrunMakesNoSense(rd) {\n    let result = rd.some((row, i, arr) => {\n        if (i < arr.length-2) {\n            if (row[\"Timer-End-Time\"] + row[\"Negative-Overrun\"] >= arr[i+1][\"Timer-End-Time\"]) {\n                node.error(`Invalid overrun in sheet line ${i+2}`);\n                return true;\n            }\n        }\n        return false;\n    });\n    return result;\n}\n\n// Parse the sheet date string into a timestamp\nfunction parseTimeString(dts, line) {\n    try {\n        let p1 = dts.split(\".\", 4);\n        let p2 = p1[2].split(\" \", 2);\n        let p3 = p2[1].split(\":\", 4).map(val => parseInt(val) || 0);\n        let d = new Date();\n        d.setUTCFullYear(parseInt(p2), parseInt(p1[1])-1, parseInt(p1[0]));\n        d.setUTCHours(p3[0], p3[1], p3[2], parseInt(p1[3]));\n        let ts = d.getTime();\n        if (ts <= 0) { throw new RangeError(); } // Negative time is not allowed, it's not the 1900's anymore\n        return ts;\n    } catch(e) {\n        node.error(`Invalid date string in sheet for value \"${dts}\" line ${line}`);\n        throw new RangeError(\"InvalidSpreadSheetDate\");\n    }\n}\n\n// Check if settings have changed\nfunction hasChanged(newRundown) {\n    let glrd = global.get(\"fullRundown\")||[];\n    if (glrd.length !== newRundown.length) return true; // Check for equal length first because that's an obvious sign that it changed\n\n    for (const [index, elem] of newRundown.entries()) {\n        for (var e in elem) {\n            if (typeof glrd[index][e] === \"object\") {\n                if (JSON.stringify(glrd[index][e]) !== JSON.stringify(elem[e])) return true; // only an array should ever show up here\n            } else {\n                if (glrd[index][e] != elem[e]) return true;\n            }\n        }\n    }\n    return false;\n}",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1000,
+        "y": 200,
+        "wires": [
+            [
+                "8022fd1.a21ce",
+                "514af678.aedc08"
+            ],
+            [
+                "4df6afd7.9488a"
+            ]
+        ],
+        "icon": "node-red/swap.svg"
+    },
+    {
+        "id": "923398f.e38b768",
+        "type": "catch",
+        "z": "a4fdfb7a.7c4368",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 120,
+        "y": 1040,
+        "wires": [
+            [
+                "e5b66f80.267b3"
+            ]
+        ]
+    },
+    {
+        "id": "e5b66f80.267b3",
+        "type": "debug",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Sheets API Catch",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 360,
+        "y": 1040,
+        "wires": [],
+        "icon": "node-red/alert.svg"
+    },
+    {
+        "id": "8022fd1.a21ce",
+        "type": "link out",
+        "z": "a4fdfb7a.7c4368",
+        "name": "rundown settings update event data changed",
+        "mode": "link",
+        "links": [
+            "188f66f6.851099"
+        ],
+        "x": 1175,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "dafbaa9f.6a7e58",
+        "type": "link out",
+        "z": "a4fdfb7a.7c4368",
+        "name": "general settings update event data",
+        "mode": "link",
+        "links": [
+            "52ba4a2f.6b3714"
+        ],
+        "x": 915,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "dafffb38.5a6498",
+        "type": "comment",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Error Reporting",
+        "info": "",
+        "x": 140,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "4df6afd7.9488a",
+        "type": "change",
+        "z": "a4fdfb7a.7c4368",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "fullRundown",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1260,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f8ad79e0.f06098",
+        "type": "change",
+        "z": "a4fdfb7a.7c4368",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "globalSettings",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1010,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "514af678.aedc08",
+        "type": "debug",
+        "z": "a4fdfb7a.7c4368",
+        "name": "GSheets Rundown Changed",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1280,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "8669ec14.4af6e",
+        "type": "inject",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Trigger local file update",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 400,
+        "wires": [
+            [
+                "4bfad26.fc5252c"
+            ]
+        ]
+    },
+    {
+        "id": "4bfad26.fc5252c",
+        "type": "file in",
+        "z": "a4fdfb7a.7c4368",
+        "name": "read file",
+        "filename": "rundown.csv",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 460,
+        "y": 400,
+        "wires": [
+            [
+                "a243ef00.418cc"
+            ]
+        ]
+    },
+    {
+        "id": "caac5d1f.83c33",
+        "type": "watch",
+        "z": "a4fdfb7a.7c4368",
+        "name": "watch local file changes",
+        "files": "rundown.csv",
+        "recursive": "",
+        "x": 180,
+        "y": 440,
+        "wires": [
+            [
+                "4bfad26.fc5252c"
+            ]
+        ]
+    },
+    {
+        "id": "a243ef00.418cc",
+        "type": "csv",
+        "z": "a4fdfb7a.7c4368",
+        "name": "parse csv",
+        "sep": ",",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "mult",
+        "ret": "\\r\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": false,
+        "include_empty_strings": false,
+        "include_null_values": "",
+        "x": 600,
+        "y": 400,
+        "wires": [
+            [
+                "c47d153d.4245b8"
+            ]
+        ]
+    },
+    {
+        "id": "53719ca9.fb0024",
+        "type": "comment",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Google Sheets API",
+        "info": "",
+        "x": 150,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "16908450.dc7c6c",
+        "type": "comment",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Local file API",
+        "info": "",
+        "x": 130,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "c47d153d.4245b8",
+        "type": "function",
+        "z": "a4fdfb7a.7c4368",
+        "name": "check local data",
+        "func": "msg.topic = \"settings/rundown\";\nmsg.payload = msg.payload||[];\n\nif (msg.payload.length === 0) {\n    node.error(`Your config file is empty, not going to do anything`);\n    return null;\n}\n\nreturn msg;\n\nfunction removeEmptyRows(array) {\n    return array.filter(x => x.length === 6);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 400,
+        "wires": [
+            [
+                "72063e4e.698cf"
+            ]
+        ],
+        "icon": "font-awesome/fa-search"
+    },
+    {
+        "id": "46ed2650.3017c8",
+        "type": "inject",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Trigger local file update",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 840,
+        "wires": [
+            [
+                "f13237a4.24e428"
+            ]
+        ]
+    },
+    {
+        "id": "f13237a4.24e428",
+        "type": "file in",
+        "z": "a4fdfb7a.7c4368",
+        "name": "read file",
+        "filename": "settings.csv",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 460,
+        "y": 840,
+        "wires": [
+            [
+                "16b15b03.58a855"
+            ]
+        ]
+    },
+    {
+        "id": "66b48ba3.70cea4",
+        "type": "watch",
+        "z": "a4fdfb7a.7c4368",
+        "name": "watch local file changes",
+        "files": "settings.csv",
+        "recursive": "",
+        "x": 180,
+        "y": 880,
+        "wires": [
+            [
+                "f13237a4.24e428"
+            ]
+        ]
+    },
+    {
+        "id": "16b15b03.58a855",
+        "type": "csv",
+        "z": "a4fdfb7a.7c4368",
+        "name": "parse csv",
+        "sep": ",",
+        "hdrin": false,
+        "hdrout": "none",
+        "multi": "mult",
+        "ret": "\\r\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": false,
+        "include_empty_strings": false,
+        "include_null_values": "",
+        "x": 600,
+        "y": 840,
+        "wires": [
+            [
+                "74b1253b.04941c"
+            ]
+        ]
+    },
+    {
+        "id": "cddb077b.f004a8",
+        "type": "comment",
+        "z": "a4fdfb7a.7c4368",
+        "name": "Local file API",
+        "info": "",
+        "x": 130,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "74b1253b.04941c",
+        "type": "function",
+        "z": "a4fdfb7a.7c4368",
+        "name": "prep array",
+        "func": "msg.payload = msg.payload.map(l => [l[\"col1\"], l[\"col2\"]]);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 840,
+        "wires": [
+            [
+                "608ecd84.e73e84"
+            ]
+        ]
+    },
+    {
+        "id": "32b912bc.dbbf9e",
+        "type": "uibuilder",
+        "z": "e1a3ba29.a71368",
+        "name": "",
+        "topic": "",
+        "url": "clock",
+        "fwdInMessages": false,
+        "allowScripts": false,
+        "allowStyles": false,
+        "copyIndex": true,
+        "templateFolder": "blank",
+        "extTemplate": "",
+        "showfolder": false,
+        "useSecurity": false,
+        "sessionLength": 432000,
+        "tokenAutoExtend": false,
+        "reload": true,
+        "sourceFolder": "src",
+        "x": 390,
+        "y": 180,
+        "wires": [
+            [
+                "95b94924.89ff08"
+            ],
+            [
+                "e51a8ee1.20f3e"
+            ]
+        ],
+        "icon": "font-awesome/fa-clock-o"
+    },
+    {
+        "id": "35630b6f.aed2b4",
+        "type": "debug",
+        "z": "e1a3ba29.a71368",
+        "name": "FE Data",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "8e095d3d.bb853",
+        "type": "debug",
+        "z": "e1a3ba29.a71368",
+        "name": "FE Control",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "5a7cfa24.2ea4e4",
+        "type": "inject",
+        "z": "e1a3ba29.a71368",
+        "name": "Sync Timestamp",
+        "props": [
+            {
+                "p": "payload.ts",
+                "v": "",
+                "vt": "date"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "settings/rtcRefTs",
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "32b912bc.dbbf9e"
+            ]
+        ]
+    },
+    {
+        "id": "434fa7e2.070b58",
+        "type": "comment",
+        "z": "e1a3ba29.a71368",
+        "name": "server sync timestamp",
+        "info": "",
+        "x": 160,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "95b94924.89ff08",
+        "type": "link out",
+        "z": "e1a3ba29.a71368",
+        "name": "fe event",
+        "mode": "link",
+        "links": [
+            "162ae27a.9d608e",
+            "568dbf8d.9f252"
+        ],
+        "x": 515,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "568dbf8d.9f252",
+        "type": "link in",
+        "z": "e1a3ba29.a71368",
+        "name": "from fe event",
+        "links": [
+            "95b94924.89ff08"
+        ],
+        "x": 695,
+        "y": 160,
+        "wires": [
+            [
+                "35630b6f.aed2b4"
+            ]
+        ]
+    },
+    {
+        "id": "e51a8ee1.20f3e",
+        "type": "link out",
+        "z": "e1a3ba29.a71368",
+        "name": "fe control event",
+        "mode": "link",
+        "links": [
+            "1769b879.3fa9f8",
+            "dcc69dd1.1b66c"
+        ],
+        "x": 515,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "1769b879.3fa9f8",
+        "type": "link in",
+        "z": "e1a3ba29.a71368",
+        "name": "from fe control event",
+        "links": [
+            "e51a8ee1.20f3e"
+        ],
+        "x": 695,
+        "y": 200,
+        "wires": [
+            [
+                "8e095d3d.bb853"
+            ]
+        ]
+    },
+    {
+        "id": "8da835fb.b696a8",
+        "type": "link in",
+        "z": "e1a3ba29.a71368",
+        "name": "to frontend unfiltered",
+        "links": [
+            "2633477d.c46d18",
+            "bac4d402.97cca8",
+            "fdd2b6ea.3757f8"
+        ],
+        "x": 235,
+        "y": 200,
+        "wires": [
+            [
+                "32b912bc.dbbf9e"
+            ]
+        ]
+    },
+    {
+        "id": "a49f29a5.ceb588",
+        "type": "inject",
+        "z": "e1a3ba29.a71368",
+        "name": "Reload all client pages",
+        "props": [
+            {
+                "p": "_uib.reload",
+                "v": "true",
+                "vt": "bool"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 240,
+        "wires": [
+            [
+                "32b912bc.dbbf9e"
+            ]
+        ]
+    },
+    {
+        "id": "de36469f.332998",
+        "type": "comment",
+        "z": "e1a3ba29.a71368",
+        "name": "\"The page\"",
+        "info": "",
+        "x": 400,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "162ae27a.9d608e",
+        "type": "link in",
+        "z": "7bde5268.b8bf9c",
+        "name": "from fe event",
+        "links": [
+            "95b94924.89ff08"
+        ],
+        "x": 155,
+        "y": 180,
+        "wires": [
+            [
+                "4f9a5a71.0c8da4"
+            ]
+        ]
+    },
+    {
+        "id": "4f9a5a71.0c8da4",
+        "type": "switch",
+        "z": "7bde5268.b8bf9c",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "initialContact",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 250,
+        "y": 180,
+        "wires": [
+            [
+                "392012d.0cabbee"
+            ],
+            [
+                "bc05aa38.866b08"
+            ]
+        ]
+    },
+    {
+        "id": "f7b5f832.e91738",
+        "type": "comment",
+        "z": "7bde5268.b8bf9c",
+        "name": "handle frontend requests",
+        "info": "",
+        "x": 250,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "2c759229.d416ee",
+        "type": "comment",
+        "z": "7bde5268.b8bf9c",
+        "name": "manage connected client sessions",
+        "info": "",
+        "x": 280,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "dcc69dd1.1b66c",
+        "type": "link in",
+        "z": "7bde5268.b8bf9c",
+        "name": "from fe control event",
+        "links": [
+            "e51a8ee1.20f3e"
+        ],
+        "x": 155,
+        "y": 340,
+        "wires": [
+            [
+                "ecbe48b.5ae2fb8"
+            ]
+        ]
+    },
+    {
+        "id": "ecbe48b.5ae2fb8",
+        "type": "function",
+        "z": "7bde5268.b8bf9c",
+        "name": "manage session",
+        "func": "var clientList = global.get(\"clients\")||{};\n\nvar socketId = msg._socketId;\n\nif (msg.uibuilderCtrl == \"client connect\") {\n    //ignore for now\n} else if (msg.uibuilderCtrl == \"ready for content\") {\n    // ignore for now\n} else if (msg.uibuilderCtrl == \"client disconnect\") {\n    try {\n        delete clientList[socketId];\n    } catch(e) {\n        node.warn(\"client not in list\");\n    }\n}\n\nglobal.set(\"clients\", clientList);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 340,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-align-left"
+    },
+    {
+        "id": "98c83cc6.d13ce",
+        "type": "inject",
+        "z": "7bde5268.b8bf9c",
+        "name": "trigger clear",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 210,
+        "y": 400,
+        "wires": [
+            [
+                "82cae639.a59a58"
+            ]
+        ]
+    },
+    {
+        "id": "82cae639.a59a58",
+        "type": "change",
+        "z": "7bde5268.b8bf9c",
+        "name": "clear global.clients",
+        "rules": [
+            {
+                "t": "set",
+                "p": "clients",
+                "pt": "global",
+                "to": "{}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "392012d.0cabbee",
+        "type": "function",
+        "z": "7bde5268.b8bf9c",
+        "name": "parse clockID",
+        "func": "var clientList = global.get(\"clients\")||{};\n\nvar socketId = msg._socketId;\n\ntry {\n    clientList[msg._socketId][\"clockID\"] = parseInt(msg.payload.clockID);\n} catch(e) {\n    // Because i can't find a fitting uibuilder event for the right timing the initialContact message will come in before the ready for content event most of the time\n    clientList[socketId] = { sid: socketId, clockID: parseInt(msg.payload.clockID) };\n}\n\nglobal.set(\"clients\", clientList);\n\nmsg.clockID = clientList[msg._socketId][\"clockID\"];\nmsg.payload = global.get(\"fullRundown\")||[];\nmsg.topic = \"settings/rundown\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 160,
+        "wires": [
+            [
+                "dfd79f2e.bdfd4",
+                "51ee2523.4eb81c"
+            ]
+        ],
+        "icon": "font-awesome/fa-search"
+    },
+    {
+        "id": "188f66f6.851099",
+        "type": "link in",
+        "z": "7bde5268.b8bf9c",
+        "name": "rundown settings event",
+        "links": [
+            "8022fd1.a21ce"
+        ],
+        "x": 155,
+        "y": 560,
+        "wires": [
+            [
+                "622eb7bd.c21228"
+            ]
+        ]
+    },
+    {
+        "id": "99977d7a.fa36d",
+        "type": "subflow:89acf5a3.56af08",
+        "z": "7bde5268.b8bf9c",
+        "name": "",
+        "env": [],
+        "x": 760,
+        "y": 560,
+        "wires": [
+            [
+                "fdd2b6ea.3757f8"
+            ]
+        ]
+    },
+    {
+        "id": "f8ba0af3.4be998",
+        "type": "split",
+        "z": "7bde5268.b8bf9c",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 430,
+        "y": 560,
+        "wires": [
+            [
+                "59ef014b.d6d0f"
+            ]
+        ]
+    },
+    {
+        "id": "82e95f1b.25209",
+        "type": "comment",
+        "z": "7bde5268.b8bf9c",
+        "name": "push rundown updates to ui",
+        "info": "",
+        "x": 260,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "622eb7bd.c21228",
+        "type": "change",
+        "z": "7bde5268.b8bf9c",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "rundown",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "clients",
+                "tot": "global"
+            },
+            {
+                "t": "set",
+                "p": "_socketId",
+                "pt": "msg",
+                "to": "null",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 560,
+        "wires": [
+            [
+                "f8ba0af3.4be998"
+            ]
+        ]
+    },
+    {
+        "id": "59ef014b.d6d0f",
+        "type": "change",
+        "z": "7bde5268.b8bf9c",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "clockID",
+                "pt": "msg",
+                "to": "payload.clockID",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "_socketId",
+                "pt": "msg",
+                "to": "payload.sid",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "rundown",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "rundown",
+                "pt": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "parts",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 580,
+        "y": 560,
+        "wires": [
+            [
+                "99977d7a.fa36d"
+            ]
+        ]
+    },
+    {
+        "id": "fdd2b6ea.3757f8",
+        "type": "link out",
+        "z": "7bde5268.b8bf9c",
+        "name": "from fe filtered rundown",
+        "mode": "link",
+        "links": [
+            "8da835fb.b696a8"
+        ],
+        "x": 875,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "bc05aa38.866b08",
+        "type": "debug",
+        "z": "7bde5268.b8bf9c",
+        "name": "unhandled fe msg",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "dfd79f2e.bdfd4",
+        "type": "subflow:89acf5a3.56af08",
+        "z": "7bde5268.b8bf9c",
+        "name": "",
+        "env": [],
+        "x": 740,
+        "y": 160,
+        "wires": [
+            [
+                "2633477d.c46d18",
+                "9b879460.a15f48"
+            ]
+        ]
+    },
+    {
+        "id": "2633477d.c46d18",
+        "type": "link out",
+        "z": "7bde5268.b8bf9c",
+        "name": "from fe filtered rundown",
+        "mode": "link",
+        "links": [
+            "8da835fb.b696a8"
+        ],
+        "x": 875,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "9b879460.a15f48",
+        "type": "debug",
+        "z": "7bde5268.b8bf9c",
+        "name": "Rundown request",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "6f2984ed.9e52ac",
+        "type": "comment",
+        "z": "7bde5268.b8bf9c",
+        "name": "push settings update to ui",
+        "info": "",
+        "x": 250,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "52ba4a2f.6b3714",
+        "type": "link in",
+        "z": "7bde5268.b8bf9c",
+        "name": "from settings update event",
+        "links": [
+            "dafbaa9f.6a7e58"
+        ],
+        "x": 155,
+        "y": 720,
+        "wires": [
+            [
+                "bac4d402.97cca8"
+            ]
+        ]
+    },
+    {
+        "id": "bac4d402.97cca8",
+        "type": "link out",
+        "z": "7bde5268.b8bf9c",
+        "name": "from fe filtered rundown",
+        "mode": "link",
+        "links": [
+            "8da835fb.b696a8"
+        ],
+        "x": 255,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "51ee2523.4eb81c",
+        "type": "change",
+        "z": "7bde5268.b8bf9c",
+        "name": "send Settings",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "globalSettings",
+                "tot": "global"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "settings/settings",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 740,
+        "y": 120,
+        "wires": [
+            [
+                "2633477d.c46d18"
+            ]
+        ]
+    }
+]
