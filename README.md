@@ -42,7 +42,7 @@ node-red:
 - [node-red-contrib-uibuilder](https://flows.nodered.org/node/node-red-contrib-uibuilder)
 
 uibuilder:
-- [vue](https://www.npmjs.com/package/vue)
+- [vue@v2-latest](https://www.npmjs.com/package/vue)
 - [bootstrap-vue](https://www.npmjs.com/package/bootstrap-vue)
 
 #### Ready? Let's go:  
@@ -53,19 +53,19 @@ In case you want to use the local file option you can ignore all the steps that 
  1.3. After creating or selecting the project click the "+ create service account" button on the top of the service accounts page  
  1.4. Give the service user some name like "node-red" and click "done"  
  1.5. Click on the newly created entry in the list and choose "keys". Click on "add key" -> "create new key", select "JSON" and click "create".  
- 1.6. You will now get a download for the login settings .json. Save that on a secure place for now, we later need to import that into node-red  
+ 1.6. You will now get a download for the login settings .json. Save that on a secure place for now, we later need to import it's contents into node-red  
  1.7. Also copy and save the displayed email address for the service user for later  
  1.7. Type "Google Sheets API" into the search box on the top of the cloud console and select the entry with the "API" logo.  
  1.8. Click the blue "enable" button to enable the google sheets api for this project  
  1.9. That is the google api setup part. It's also descibed on the [node-red-contrib-google-sheets](https://flows.nodered.org/node/node-red-contrib-google-sheets) page  
  2. Setting up node-red (skip this if you already have a node-red instance)  
- 2.1. I will not go into detail about how to install or run node-red as the node-red project has done a much better job as i would be able to already [in their documentation](https://nodered.org/docs/getting-started/). You can host it wherever and however you like. There is not really anything special that you have to do except all clients beeing able to reach the server.  
+ 2.1. I will not go into detail about how to install or run node-red as the node-red project has done a much better job as i would be able to already [in their documentation](https://nodered.org/docs/getting-started/). You can host it wherever and however you like. There is not really anything special that you have to do except all clients beeing able to reach the server. Personally i run it either locally on windows or in a docker container for development
  2.2. Come back to the next step after you installed it and you can reach the flow editor  
  3. Preparing node-red  
  3.1. Open the flow editor in your browser  
  3.2. Click on the hamburger menu on the top right and choose "Manage palette" and select the "Install" tab  
  3.3. In the seach bar copy-paste "node-red-contrib-uibuilder" and click on the "install"(search result list) -> "Install"(install popup) buttons. Wait a bit until node-red reports that it finished installing.  
- 3.4. Repeat theis process again for "node-red-contrib-google-sheets" (install this even if you don't use the google sheets option)  
+ 3.4. Repeat this process again for "node-red-contrib-google-sheets" (install this even if you don't plan to use the google sheets option)  
  4. Installing the production clock project  
  4.1. Download and unzip the [master branch zip](https://github.com/lebaston100/ProductionClock/archive/refs/heads/main.zip) or use you favorite git client to clone the repo  
  4.2. Head back to the node-red dashboard. In the hamburger menu (top right) select "Import" and click "select a file to import". Now select the "flows.json" in the projects "flow" folder and click the "Import Button".  
@@ -76,12 +76,12 @@ In case you want to use the local file option you can ignore all the steps that 
  4.7. Open the .json file you downloaded earlier from the google website with a text editor and copy-paste everything from the file into the big "Creds" textbox in node-red  
  4.8. Click "Update" -> "Done" and "Deploy". Node-Red should now be able to authenticate to the google api.  
  4.9. Switch to the "Clock UI" tab and double click the "clock" node in the middle  
- 4.10. "OK" the warning message and click on "Manage front-end libraries"  
- 4.11. Click the little "+add" button and type "vue" into the text box. Now click the "Install" button next to it and wait for it to finish installing  
- 4.12. Repeat the last step but this time type "bootstrap-vue" into the box  
+ 4.10. "OK" the warning message(if one appears) and click on "Manage front-end libraries"  
+ 4.11. Click the little "+add" button and type "vue" into the "Name:" text box and "@v2-latest" into the "Tag:" text box. Now click the "Install" button and wait for it to finish installing  
+ 4.12. Repeat the last step but this time type "bootstrap-vue"("Name:") into the box (And nothing in the "Tag:" box)
  4.13. Now click "Done" and "Deploy" again  
  4.14. Open the node-red installation folder with a file explorer. There should already be a "uibuilder" folder besides the "node_modules" and "lib" folder.  
- 4.15. Grab the "uibuilder" folder you downloaded from github and overwrite the existing folder with it overwriting all lose files in the process. Alternatively you can go down into the "clock" folder in node-red and overwrite the 3 files with all the lose files from the github "uibuilder\clock\src" subfolder.  
+ 4.15. Grab the "uibuilder" folder you downloaded from github and overwrite the existing folder with it overwriting all lose files in the process. Alternatively you can go down into the "clock" folder in node-red and overwrite the preexisting 3 files with all the lose files from the github "uibuilder\clock\src" subfolder.  
 5. Setting up the spreadsheet  
 5.1. Clone the [template](https://docs.google.com/spreadsheets/d/1vuk6D56GfGpQ8ZVcVkTZMTHZln62enbjQTnc_ASXXFw/edit?usp=sharing) into your own account.  
 5.2. Open the share dialog and share the document with the google service user email you copied earlier. Make sure the user has edit permission.  
@@ -140,3 +140,4 @@ If you want to use the clock id feature then use http://\<node-red-server-ip\>:1
 And now stop reading this readme and get back to production.
 
 If you have any problems, just open a Github issue or join the [Discord Server](https://discord.gg/PCYQJwX).
+In case you want something simpler to setup with a gui check out [Ontime](https://github.com/cpvalente/ontime).

@@ -4,7 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Production Clock</title>
-    <link rel="icon" href="./images/node-blue.ico">
+    <link rel="icon" href="../uibuilder/images/node-blue.ico">
     <link type="text/css" rel="stylesheet" href="../uibuilder/vendor/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="../uibuilder/vendor/bootstrap-vue/dist/bootstrap-vue.css" />
     <link type="text/css" rel="stylesheet" href="./index.css" media="all">
@@ -36,20 +36,14 @@
         </b-container>
     </div>
     
-    <script src="../uibuilder/vendor/socket.io/socket.io.js"></script>
-    
+   
     <!-- Prod version -->
-    <script src="../uibuilder/vendor/vue/dist/vue.min.js"></script>
-    <script src="../uibuilder/vendor/bootstrap-vue/dist/bootstrap-vue.min.js"></script>
-    <script src="./uibuilderfe.min.js"></script>
-    
-    <!-- Dev version -->
-    <!--<script src="../uibuilder/vendor/vue/dist/vue.js"></script>
-    <script src="../uibuilder/vendor/bootstrap-vue/dist/bootstrap-vue.js"></script>
-    <script src="./uibuilderfe.js"></script>-->
+    <script defer src="../uibuilder/vendor/vue/dist/vue.min.js"></script>
+    <script defer src="../uibuilder/vendor/bootstrap-vue/dist/bootstrap-vue.min.js"></script>
+    <script defer src="../uibuilder/uibuilder.iife.min.js"></script>
 
-    <script src="./AnimationController.js"></script>
-    <script src="./RTC.js"></script>
-    <script src="./RundownController.js"></script>
-    <script src="./index.js"></script>
+    <script defer src="./AnimationController.js"></script>
+    <script defer src="./RTC.js"></script>
+    <script defer src="./RundownController.js"></script>
+    <script defer src="./index.js"></script>
 </body></html>

@@ -1,6 +1,7 @@
 *.7z
 *.zip
 *.log
+*.code-workspace
 .DS_Store
 .DS_Store?
 ._*
